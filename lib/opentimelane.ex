@@ -1,18 +1,23 @@
-defmodule Opentimelane do
+defmodule Opentimelane.Application do
   @moduledoc """
-  Documentation for Opentimelane.
+  Application entrypoint
   """
+  use Application
 
-  @doc """
-  Hello world.
+  def start(_type, _args) do
+    # List all child processes to be supervised
+    # See https://hexdocs.pm/elixir/Supervisor.html
+    # for other strategies and supported options
 
-  ## Examples
+    result =
+      children()
+      |> Supervisor.start_link([strategy: :one_for_all, name: Opentimelane.Application])
 
-      iex> Opentimelane.hello()
-      :world
+    result
+  end
 
-  """
-  def hello do
-    :world
+  def children do
+    [
+    ]
   end
 end

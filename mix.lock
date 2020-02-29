@@ -1,0 +1,10 @@
+%{
+  "espec": {:hex, :espec, "1.8.1", "338d2f49cf4038bf617de7fcb0f92396f31a7b2febf506cfb56a6ac9ac18b802", [:mix], [{:meck, "~> 0.8.13", [hex: :meck, repo: "hexpm", optional: false]}], "hexpm", "808f6bfe2b3a9bd3d4c971f7782ce2e0a926205ca4699b5076c81c1261a50f12"},
+  "ets_owner": {:hex, :ets_owner, "1.0.0", "f8408c609c29cb6925c2f71bac07f3e35352786b2c6824ad545f8133a4f3762d", [:mix], [], "hexpm", "54c0228a9134f4afe5c2a5418712a8b010bbc3f3e4864f3c854110f6cb65bca9"},
+  "ex2ms": {:hex, :ex2ms, "1.6.0", "f39bbd9ff1b0f27b3f707bab2d167066dd8965e7df1149b962d94c74615d0e09", [:mix], [], "hexpm", "0d1ab5e08421af5cd69146efb408dbb1ff77f38a2f4df5f086f2512dc8cf65bf"},
+  "flub": {:hex, :flub, "1.1.4", "5f5421b7ff02d2f5f1e4cd1334a0d63a88cf983b01bffedebff5d60ae085eb7b", [:mix], [{:ets_owner, "~> 1.0", [hex: :ets_owner, repo: "hexpm", optional: false]}, {:ex2ms, "~> 1.0", [hex: :ex2ms, repo: "hexpm", optional: false]}, {:gproc, "~> 0.5", [hex: :gproc, repo: "hexpm", optional: false]}, {:shorter_maps, "~> 2.1", [hex: :shorter_maps, repo: "hexpm", optional: false]}], "hexpm", "f8a0c00f3f469dd56b2c8a9141108b811b5db8d467ab331e1f99d287a803b9b0"},
+  "gproc": {:hex, :gproc, "0.8.0", "cea02c578589c61e5341fce149ea36ccef236cc2ecac8691fba408e7ea77ec2f", [:rebar3], [], "hexpm", "580adafa56463b75263ef5a5df4c86af321f68694e7786cb057fd805d1e2a7de"},
+  "meck": {:hex, :meck, "0.8.13", "ffedb39f99b0b99703b8601c6f17c7f76313ee12de6b646e671e3188401f7866", [:rebar3], [], "hexpm", "d34f013c156db51ad57cc556891b9720e6a1c1df5fe2e15af999c84d6cebeb1a"},
+  "poison": {:hex, :poison, "3.1.0", "d9eb636610e096f86f25d9a46f35a9facac35609a7591b3be3326e99a0484665", [:mix], [], "hexpm", "fec8660eb7733ee4117b85f55799fd3833eb769a6df71ccf8903e8dc5447cfce"},
+  "shorter_maps": {:hex, :shorter_maps, "2.2.5", "77b2e3632a49c72ca8aea2a47687767b3ad2623b9ade529ffe31f41865a32886", [:mix], [], "hexpm", "fbef59a9f13369f819111f500f0253678526ea8c717d794a224df41223bc88ab"},
+}
