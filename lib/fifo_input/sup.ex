@@ -2,17 +2,34 @@ defmodule FifoInput.Sup do
   @moduledoc """
   Supervisor for logging
   """
-  use Supervisor
+  use DynamicSupervisor
+  use LoggerUtils
 
   def start_link(:ok) do
-    Supervisor.start_link(__MODULE__, :ok, name: __MODULE__)
+    DynamicSupervisor.start_link(__MODULE__, :ok, name: __MODULE__)
   end
 
-  @impl true
+  @doc """
+  Start a fifo worker
+
+  ## Parameters:
+  - fifo_path: The fifo to read
+
+  ## Returns
+  - {:ok, pid} on success
+  - {:error, reason} on failure
+  """
+  def start_worker(fifo_path) do
+    DynamicSupervisor.start_child(__MODULE__, {FiFoInput.Worker, fifo_path})
+  end
+
+
+  ##############################
+  # GenServer Callbacks
+  ##############################
+
   def init(:ok) do
-    children = [
-      {FifoInput.Worker, [:ok]},
-    ]
-    Supervisor.init(children, strategy: :one_for_one)
+    LoggerUtils.info("starting")
+    DynamicSupervisor.init(strategy: :one_for_one)
   end
 end

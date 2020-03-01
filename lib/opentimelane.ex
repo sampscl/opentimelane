@@ -9,15 +9,15 @@ defmodule Opentimelane.Application do
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
 
-    result =
-      children()
-      |> Supervisor.start_link([strategy: :one_for_all, name: Opentimelane.Application])
+    result = children() |> Supervisor.start_link([strategy: :one_for_all, name: Opentimelane.Application])
 
     result
   end
 
   def children do
     [
+      {FifoInput.Sup, :ok},
+      {EventLogger, :ok},
     ]
   end
 end

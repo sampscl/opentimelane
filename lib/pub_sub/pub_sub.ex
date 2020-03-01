@@ -5,8 +5,12 @@ defmodule PubSub do
   import PubSub.Helpers
   use PubSub.Helpers
 
-  # Notification channel about motion events. Model is a %Db.Models.MotionEvent{}
-  # and event must be in [:begin, :end, :delete]
-  # define_channel("motion_event_notice", model: nil, event: :begin)
+  # Notification about a new timelane event:
+  #   app: Application name
+  #   module: Module within the app
+  #   time: DateTime.t() for the event
+  #   event: The name of the event
+  #   metadata: map of metadata associated with the event
+  define_channel("timelane_event", app: "", module: "", time: nil, event: "", metadata: %{})
 
 end

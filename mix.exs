@@ -25,9 +25,14 @@ defmodule Opentimelane.MixProject do
     [
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
+      {:espec, "~> 1.4.0", only: :test},
+      {:credo, "~> 0.9.0-rc1", only: [:dev, :test], runtime: false},
+      {:logger_file_backend, "~> 0.0.11"},
+      {:ghoul, "~> 0.1"},
+      {:shorter_maps, "~> 2.2"},
       {:poison, "~> 3.1"},
       {:flub, "~> 1.1"},
-      {:espec, "~> 1.4", only: :test},
+      {:timex, "~> 3.6"},
     ]
   end
 end
