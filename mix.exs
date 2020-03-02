@@ -33,6 +33,9 @@ defmodule Opentimelane.MixProject do
       {:poison, "~> 3.1"},
       {:flub, "~> 1.1"},
       {:timex, "~> 3.6"},
+      {:cowboy, "~> 2.7"},
+      {:plug, "~> 1.9"},
+      {:plug_cowboy, "~> 2.1"},
     ]
   end
 end
