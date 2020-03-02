@@ -33,12 +33,16 @@ defmodule EventLogger do
 
   @impl true
   def handle_info(%Flub.Message{data: ~M{%PubSub.TimelaneEvent} = event}, state) do
-    LoggerUtils.info(inspect(event, pretty: true))
+    do_log_event(event)
     {:noreply, state}
   end
 
   ##############################
   # Internal Calls
   ##############################
+
+  def do_log_event(event) do
+    LoggerUtils.info(inspect(event, pretty: true))
+  end
 
 end
