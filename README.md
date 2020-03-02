@@ -1,6 +1,8 @@
 # Opentimelane
 
-**TODO: Add description**
+Opentimeline is a debugging tool that collects events from a running program, or
+from a log, and displays them on a timeline. Its power is in the ability to
+visually inspect asynchronous behavior recorded by any language or platform.
 
 ## Installation
 
@@ -18,4 +20,3 @@ end
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at [https://hexdocs.pm/opentimelane](https://hexdocs.pm/opentimelane).
-
