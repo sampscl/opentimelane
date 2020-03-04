@@ -3,22 +3,6 @@ defmodule Web do
   Api for the web application
   """
 
-  @spec certs_path() :: String.t
-  @doc """
-  Get path to dir where cert.pem and key.pem are stored. This function has no
-  web-internal dependencies and can be called anytime the web dependencies are
-  started.
-
-  ## Return
-  - String path to directory where cert.pem and key.pem are stored
-  """
-  def certs_path() do
-    case Settings.get(:web, :certs_path) do
-      :priv -> "#{:code.priv_dir(:web)}"
-      path  -> path
-    end
-  end
-
   @spec web_root() :: String.t | {:error, any()}
   @doc """
   Get the full path to the directory containing the web app build. This depends

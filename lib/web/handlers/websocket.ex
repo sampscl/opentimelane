@@ -13,6 +13,7 @@ defmodule Web.Handlers.Websocket do
     end
   end
 
+  def send_to_clients(~M{%PubSub.TimelaneEvent} = msg), do: send_msg("timelane_event", PubSub.timelane_event_chnl(), msg)
   def send_msg(type, channel, body) do
     LoggerUtils.debug("#{inspect(~M/type, channel, body/, pretty: true)}")
     pkg = ~M{type, body}
@@ -34,6 +35,7 @@ defmodule Web.Handlers.Websocket do
 
   def websocket_init(_state) do
     :gproc.reg({:p, :l, __MODULE__})
+    :gproc.reg({:p, :l, {__MODULE__, PubSub.timelane_event_chnl()}})
   end
 
   def websocket_handle(_frame, state) do

@@ -36,6 +36,7 @@ defmodule Opentimelane.MixProject do
       {:cowboy, "~> 2.7"},
       {:plug, "~> 1.9"},
       {:plug_cowboy, "~> 2.1"},
+      {:external_state, "~> 1.0.6"},
     ]
   end
 end

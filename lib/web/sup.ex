@@ -9,7 +9,7 @@ defmodule Web.Sup do
   #############
 
   def start_link(:ok) do
-    Supervisor.start_link(__MODULE__, :ok, name: __MODULE__)
+    Supervisor.start_link(__MODULE__, [:ok], name: __MODULE__)
   end
 
   ##############################
@@ -17,7 +17,7 @@ defmodule Web.Sup do
   ##############################
 
   def init([:ok]) do
-    supervise(children(), strategy: :one_for_one)
+    Supervisor.init(children(), strategy: :one_for_one)
   end
 
   ##############################

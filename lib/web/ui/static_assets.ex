@@ -6,7 +6,7 @@ defmodule Web.Ui.StaticAssets do
   use Plug.Builder
 
   #plug Plug.Logger
-  plug Plug.Static, at: "", from: {:web, "priv/ui/build/static"}
+  plug Plug.Static, at: "", from: {:opentimelane, "priv/ui/build/static"}
   plug :not_found
 
   def not_found(conn, _opts) do

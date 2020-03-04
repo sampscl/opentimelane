@@ -1,6 +1,6 @@
 defmodule FifoInput.Sup do
   @moduledoc """
-  Supervisor for logging
+  Supervisor for fifo input
   """
   use DynamicSupervisor
   use LoggerUtils
