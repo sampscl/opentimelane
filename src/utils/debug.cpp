@@ -14,7 +14,7 @@
 #include <string>
 #include <time.h>
 #include <ctype.h>
-
+#include <libgen.h>
 #include "string_utils.hpp"
 #include "buffer.hpp"
 

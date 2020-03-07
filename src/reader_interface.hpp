@@ -18,12 +18,10 @@ public:
   virtual ~IReader(){}
 
   ///
-  /// @brief Handle receipt of data
-  /// @param[in] data Pointer to data, cannot be null unless len is 0
-  /// @param[in] len Length, bytes, of data; can be 0
-  /// @return like errno
+  /// @brief Read data; called when there is definitely data available
+  /// @return like errno; if an error is reported this reader will be deleted
   ///
-  virtual int on_data(const void *data, size_t len) = 0;
+  virtual int read_data(void) = 0;
 }; // end class IReader
 
 #endif // _READER_INTERFACE

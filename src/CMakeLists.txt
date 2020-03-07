@@ -42,7 +42,6 @@ add_definitions(-DMG_ENABLE_HTTP_WEBSOCKET)
 add_executable(${PROJECT_NAME} ${SRCS})
 target_link_libraries(${PROJECT_NAME}
   ${CMAKE_THREAD_LIBS_INIT}
-  rt
 )
 
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)

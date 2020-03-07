@@ -9,19 +9,66 @@
 #define _FIFO_READER_HPP
 
 #include "reader_interface.hpp"
+#include <string>
+#include "utils/buffer.hpp"
 
 ///
 /// @class FifoReader
 /// @brief Read from a fifo
-/// @details
 ///
 class FifoReader : public IReader {
 public:
+  typedef Buffer<char> char_buff_t; //!< Character buffer
+
   FifoReader();
   virtual ~FifoReader();
 
+  ///
+  /// @brief Create a fifo given a path
+  /// @param[in] path The path to the fifo; will be created world-writable
+  /// @param[in] destroy_on_close @li true causes the fifo to be deleted when
+  ///   this instance is done with it @li false the fifo is not deleted, only
+  ///   closed when this instance is done with it
+  /// @return like errno
+  ///
+  int fifo_create(const char *path, bool destroy_on_close = true);
+  ///
+  /// @brief Open fifo given path
+  /// @param[in] path The path to the fifo
+  /// @param[in] destroy_on_close @li true causes the fifo to be deleted when
+  ///   this instance is done with it @li false the fifo is not deleted, only
+  ///   closed when this instance is done with it
+  /// @return like errno
+  ///
+  int fifo_open(const char *path, bool destroy_on_close = false);
+
+  ///
+  /// @brief Close a created or opened fifo
+  /// @return like errno
+  ///
+  int close(void);
+
   // Methods inherited from IReader
-  virtual int on_data(const void *data, size_t len) override;
+  virtual int read_data(void) override;
+
+  ///
+  /// @brief Exposed for testing only
+  ///
+  void process_buffer(void);
+
+  ///
+  /// @brief Process a single line; exposed for testing
+  /// @param[in] line A single line of text, no newlines allowed
+  ///
+  void process_line(const std::string& line);
+
+private:
+
+  int fd; //!< File descriptor
+  bool destroy_on_close;
+  std::string fifo_path;
+  char_buff_t line_buffer;
+  static const size_t MAX_LINE = 2048;
 
 }; // end class FifoReader
 

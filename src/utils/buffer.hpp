@@ -536,6 +536,42 @@ public:
       }
     }
 
+    ///
+    /// @brief Get an iterator to the start of the buffer
+    /// @note Wrapped buffers do not support iterators
+    /// @return iterator
+    ///
+    iterator begin(void) {
+      if(iswrapped()) { return m_Data.end(); }
+      return m_Data.begin();
+    }
+
+    ///
+    /// @brief Get a constant iterator to the start of the buffer
+    /// @note Wrapped buffers do not support iterators
+    /// @return const_iterator
+    ///
+    const_iterator begin(void) const {
+      if(iswrapped()) { return m_Data.end(); }
+      return m_Data.begin();
+    }
+
+    ///
+    /// @brief Get an iterator to the end of the buffer
+    /// @return iterator
+    ///
+    iterator end(void) {
+      return m_Data.end();
+    }
+
+    ///
+    /// @brief Get a constant iterator to the end of the buffer
+    /// @return const_iterator
+    ///
+    const_iterator end(void) const {
+      return m_Data.end();
+    }
+
 private:
     storage_t m_Data;
     uint8_t* m_WrapData;
