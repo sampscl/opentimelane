@@ -50,24 +50,20 @@ public:
 
   // Methods inherited from IReader
   virtual int read_data(void) override;
+  virtual void init(IMessageHandlerInterface *handler) override;
 
   ///
   /// @brief Exposed for testing only
   ///
   void process_buffer(void);
 
-  ///
-  /// @brief Process a single line; exposed for testing
-  /// @param[in] line A single line of text, no newlines allowed
-  ///
-  void process_line(const std::string& line);
-
 private:
 
-  int fd; //!< File descriptor
+  int fd;
   bool destroy_on_close;
   std::string fifo_path;
   char_buff_t line_buffer;
+  IMessageHandlerInterface *handler;
   static const size_t MAX_LINE = 2048;
 
 }; // end class FifoReader

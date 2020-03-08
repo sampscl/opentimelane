@@ -20,7 +20,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 // FifoReader::FifoReader
 ////////////////////////////////////////////////////////////////////////////////
-FifoReader::FifoReader() : fd(-1), destroy_on_close(false), fifo_path(), line_buffer(MAX_LINE) {
+FifoReader::FifoReader() :
+  fd(-1), destroy_on_close(false), fifo_path(), line_buffer(MAX_LINE), handler(nullptr) {
 } // end FifoReader::FifoReader
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -36,6 +37,7 @@ FifoReader::~FifoReader() {
 int FifoReader::read_data(void) {
   size_t fill_line = line_buffer.size();
   if(fill_line >= MAX_LINE) {
+    dpr("Line buffer full\n");
     return EFBIG;
   }
 
@@ -47,10 +49,12 @@ int FifoReader::read_data(void) {
   ssize_t amount = read(fd, line_buffer.arrayptr(fill_line), available);
   if(0 == amount) { // end of file
     line_buffer.resize(fill_line);
+    dpr("End of file on what should be a non-empty fifo\n");
     return EAGAIN;
   }
   if(amount < 0) { // error
     int result = errno;
+    dpr("Error reading %s: %s\n", fifo_path.c_str(), strerror(result));
     line_buffer.resize(fill_line);
     return result;
   }
@@ -62,7 +66,14 @@ int FifoReader::read_data(void) {
   process_buffer();
 
   return 0;
-} // end FifoReader::on_data
+} // end FifoReader::read_data
+
+////////////////////////////////////////////////////////////////////////////////
+// FifoReader::init
+////////////////////////////////////////////////////////////////////////////////
+void FifoReader::init(IMessageHandlerInterface *handler) {
+  this->handler = handler;
+} // end FifoReader::init
 
 ////////////////////////////////////////////////////////////////////////////////
 //  FifoReader::fifo_create
@@ -127,13 +138,6 @@ void FifoReader::process_buffer(void) {
     line_buffer.realign(newline - line_buffer.begin() + 1);
 
     // process a line
-    process_line(line);
+    handler->process_message(line);
   } // end while(true)
 } // end FifoReader::process_buffer
-
-////////////////////////////////////////////////////////////////////////////////
-// FifoReader::process_line
-////////////////////////////////////////////////////////////////////////////////
-void FifoReader::process_line(const std::string& line) {
-  // TODO: finish process_line
-} // end fifoReader::process_line
