@@ -10,7 +10,7 @@
 
 #include "reader_interface.hpp"
 #include <string>
-#include "utils/buffer.hpp"
+#include "../utils/buffer.hpp"
 
 ///
 /// @class FifoReader

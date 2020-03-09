@@ -15,7 +15,7 @@
 
 #include <algorithm>
 
-#include "utils/debug.hpp"
+#include "../utils/debug.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 // FifoReader::FifoReader

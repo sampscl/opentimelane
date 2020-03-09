@@ -59,7 +59,11 @@ else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wpedantic")
 endif()
 
-file(GLOB TEST_SRCS *.cpp ${CMAKE_SOURCE_DIR}/src/*.cpp ${CMAKE_SOURCE_DIR}/src/utils/*.cpp)
+file(GLOB TEST_SRCS *.cpp
+  ${CMAKE_SOURCE_DIR}/src/*.cpp
+  ${CMAKE_SOURCE_DIR}/src/utils/*.cpp
+  ${CMAKE_SOURCE_DIR}/src/readers/*.cpp
+)
 list(REMOVE_ITEM TEST_SRCS ${CMAKE_SOURCE_DIR}/src/main.cpp)
 
 add_executable(${PROJECT_NAME} ${TEST_SRCS})

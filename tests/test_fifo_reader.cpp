@@ -1,9 +1,10 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string>
 
 #include <gmock/gmock.h>
 #include "message_handler_interface.hpp"
-#include "fifo_reader.hpp"
+#include "readers/fifo_reader.hpp"
 
 using ::testing::_;
 using ::testing::Return;
@@ -26,14 +27,14 @@ public:
 };
 
 TEST_F(FifoReaderTest, will_create_and_destroy_fifo) {
-  char name[L_tmpnam]="";
+  char name[L_tmpnam]="otl_test_XXXXXX";
   struct stat name_stat;
-  tmpnam(name);
+  mkstemp(name);
   {
     FifoReader r;
     ASSERT_EQ(0, r.fifo_create(name, true));
     ASSERT_EQ(0, stat(name, &name_stat));
-    EXPECT_EQ(S_IFIFO, name_stat.st_mode & S_IFIFO);
+    EXPECT_EQ(int(S_IFIFO), int(name_stat.st_mode & S_IFIFO));
     FILE *f = fopen(name, "w");
     EXPECT_NE(nullptr, f);
     fclose(f);
@@ -42,8 +43,8 @@ TEST_F(FifoReaderTest, will_create_and_destroy_fifo) {
 } // end
 
 TEST_F(FifoReaderTest, does_not_process_non_lines) {
-  char name[L_tmpnam]="";
-  tmpnam(name);
+  char name[L_tmpnam]="otl_test_XXXXXX";
+  mkstemp(name);
   FifoReader r;
   MessageHandlerInterface h;
   r.init(&h);
@@ -63,8 +64,8 @@ TEST_F(FifoReaderTest, does_not_process_non_lines) {
 } // end
 
 TEST_F(FifoReaderTest, processes_single_line) {
-  char name[L_tmpnam]="";
-  tmpnam(name);
+  char name[L_tmpnam]="otl_test_XXXXXX";
+  mkstemp(name);
   FifoReader r;
   MessageHandlerInterface h;
   r.init(&h);
@@ -84,8 +85,8 @@ TEST_F(FifoReaderTest, processes_single_line) {
 } // end
 
 TEST_F(FifoReaderTest, processes_spliced_lines) {
-  char name[L_tmpnam]="";
-  tmpnam(name);
+  char name[L_tmpnam]="otl_test_XXXXXX";
+  mkstemp(name);
   FifoReader r;
   MessageHandlerInterface h;
   r.init(&h);
@@ -106,8 +107,8 @@ TEST_F(FifoReaderTest, processes_spliced_lines) {
 } // end
 
 TEST_F(FifoReaderTest, processes_multiple_lines) {
-  char name[L_tmpnam]="";
-  tmpnam(name);
+  char name[L_tmpnam]="otl_test_XXXXXX";
+  mkstemp(name);
   FifoReader r;
   MessageHandlerInterface h;
   r.init(&h);
@@ -133,8 +134,8 @@ TEST_F(FifoReaderTest, processes_multiple_lines) {
 } // end
 
 TEST_F(FifoReaderTest, processes_multiple_spliced_lines) {
-  char name[L_tmpnam]="";
-  tmpnam(name);
+  char name[L_tmpnam]="otl_test_XXXXXX";
+  mkstemp(name);
   FifoReader r;
   MessageHandlerInterface h;
   r.init(&h);

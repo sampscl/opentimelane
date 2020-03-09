@@ -24,7 +24,12 @@ set(CMAKE_CXX_FLAGS_DEBUG "-g")
 find_package(Threads REQUIRED)
 
 # list of source files
-file(GLOB SRCS *.cpp *.c utils/*.cpp)
+file(GLOB SRCS *.cpp
+  *.c
+  utils/*.cpp
+  readers/*.cpp
+  web/*.c
+)
 
 # debug or not
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
