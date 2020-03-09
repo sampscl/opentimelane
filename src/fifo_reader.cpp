@@ -93,7 +93,7 @@ int FifoReader::fifo_open(const char *path, bool destroy_on_close) {
   dpr("Opening %s\n", path);
   this->fifo_path = path;
   this->destroy_on_close = destroy_on_close;
-  this->fd = open(path, O_RDONLY);
+  this->fd = open(path, O_RDONLY|O_NONBLOCK);
   return fd < 0 ? errno : 0;
 } // end FifoReader::fifo_open
 
@@ -125,6 +125,7 @@ void FifoReader::process_buffer(void) {
   while(!line_buffer.empty()) {
     char_buff_t::const_iterator newline = std::find(line_buffer.begin(), line_buffer.end(), '\n');
     if(newline == line_buffer.end()) { // have some data but not a whole line (yet)
+      dpr("Partial line\n");
       return;
     }
 
@@ -134,10 +135,14 @@ void FifoReader::process_buffer(void) {
       line += (*ch);
     }
 
+    dpr("Got line: \"%s\"\n", line.c_str());
+
     // realign to 1-past-the-newline
     line_buffer.realign(newline - line_buffer.begin() + 1);
 
+    dpr("New buffer size: %zu\n", line_buffer.size());
+
     // process a line
     handler->process_message(line);
-  } // end while(true)
+  } // end while
 } // end FifoReader::process_buffer

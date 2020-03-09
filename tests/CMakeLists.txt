@@ -51,7 +51,15 @@ include_directories(
   "${CMAKE_SOURCE_DIR}/src/"
 )
 
-file(GLOB TEST_SRCS *.cpp)
+# debug or not
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  add_definitions(-DDEBUG)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
+else()
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wpedantic")
+endif()
+
+file(GLOB TEST_SRCS *.cpp ${CMAKE_SOURCE_DIR}/src/*.cpp ${CMAKE_SOURCE_DIR}/src/utils/*.cpp)
 list(REMOVE_ITEM TEST_SRCS ${CMAKE_SOURCE_DIR}/src/main.cpp)
 
 add_executable(${PROJECT_NAME} ${TEST_SRCS})
