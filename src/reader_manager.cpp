@@ -61,7 +61,7 @@ void ReaderManager::poll_readers(int timeout_ms) {
 
   struct timeval t;
   t.tv_sec = timeout_ms / 1000;
-  t.tv_usec = (timeout_ms - t.tv_sec) * 1000;
+  t.tv_usec = (timeout_ms - (t.tv_sec*1000)) * 1000;
 
   fd_set read_fds;
   FD_ZERO(&read_fds);
