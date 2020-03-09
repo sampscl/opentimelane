@@ -26,6 +26,12 @@ public:
   virtual void init(IMessageHandlerInterface *handler) = 0;
 
   ///
+  /// @brief Get a file descriptor for this reader that can be waited on
+  /// @return File descriptor for this reader; -1 for no fd
+  ///
+  virtual int get_fd(void) const = 0;
+
+  ///
   /// @brief Read data; called when there is definitely data available
   /// @return like errno; if an error is reported this reader will be deleted
   ///

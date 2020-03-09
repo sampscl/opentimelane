@@ -49,8 +49,9 @@ public:
   int close(void);
 
   // Methods inherited from IReader
-  virtual int read_data(void) override;
   virtual void init(IMessageHandlerInterface *handler) override;
+  virtual int read_data(void) override;
+  virtual int get_fd(void) const override;
 
   ///
   /// @brief Exposed for testing only

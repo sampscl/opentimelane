@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include "web/mongoose.h"
 #include "utils/debug.hpp"
-
+#include "reader_manager.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Stop when this is false

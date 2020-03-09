@@ -27,9 +27,8 @@ public:
 };
 
 TEST_F(FifoReaderTest, will_create_and_destroy_fifo) {
-  char name[L_tmpnam]="otl_test_XXXXXX";
+  char name[]="will_create_and_destroy_fifo";
   struct stat name_stat;
-  mkstemp(name);
   {
     FifoReader r;
     ASSERT_EQ(0, r.fifo_create(name, true));
@@ -43,8 +42,7 @@ TEST_F(FifoReaderTest, will_create_and_destroy_fifo) {
 } // end
 
 TEST_F(FifoReaderTest, does_not_process_non_lines) {
-  char name[L_tmpnam]="otl_test_XXXXXX";
-  mkstemp(name);
+  char name[]="does_not_process_non_lines";
   FifoReader r;
   MessageHandlerInterface h;
   r.init(&h);
@@ -64,8 +62,7 @@ TEST_F(FifoReaderTest, does_not_process_non_lines) {
 } // end
 
 TEST_F(FifoReaderTest, processes_single_line) {
-  char name[L_tmpnam]="otl_test_XXXXXX";
-  mkstemp(name);
+  char name[]="processes_single_line";
   FifoReader r;
   MessageHandlerInterface h;
   r.init(&h);
@@ -85,8 +82,7 @@ TEST_F(FifoReaderTest, processes_single_line) {
 } // end
 
 TEST_F(FifoReaderTest, processes_spliced_lines) {
-  char name[L_tmpnam]="otl_test_XXXXXX";
-  mkstemp(name);
+  char name[]="processes_spliced_lines";
   FifoReader r;
   MessageHandlerInterface h;
   r.init(&h);
@@ -107,8 +103,7 @@ TEST_F(FifoReaderTest, processes_spliced_lines) {
 } // end
 
 TEST_F(FifoReaderTest, processes_multiple_lines) {
-  char name[L_tmpnam]="otl_test_XXXXXX";
-  mkstemp(name);
+  char name[]="processes_multiple_lines";
   FifoReader r;
   MessageHandlerInterface h;
   r.init(&h);
@@ -134,8 +129,7 @@ TEST_F(FifoReaderTest, processes_multiple_lines) {
 } // end
 
 TEST_F(FifoReaderTest, processes_multiple_spliced_lines) {
-  char name[L_tmpnam]="otl_test_XXXXXX";
-  mkstemp(name);
+  char name[]="processes_multiple_spliced_lines";
   FifoReader r;
   MessageHandlerInterface h;
   r.init(&h);
