@@ -140,10 +140,7 @@ TEST_F(FifoReaderTest, processes_multiple_spliced_lines) {
   r.init(&h);
   ASSERT_EQ(0, r.fifo_create(name, true));
   FILE *f = fopen(name, "w");
-  EXPECT_NE(nullptr, f);
-  fprintf(f, "line one\nline ");
-  fprintf(f, "two\nline 3\n");
-  fflush(f);
+  ASSERT_NE(nullptr, f);
 
   EXPECT_CALL(h, process_message("line one"))
     .Times(1)
@@ -155,6 +152,11 @@ TEST_F(FifoReaderTest, processes_multiple_spliced_lines) {
     .Times(1)
   ;
 
+  fprintf(f, "line one\nline ");
+  fflush(f);
+  ASSERT_EQ(0, r.read_data());
+  fprintf(f, "two\nline 3\n");
+  fflush(f);
   ASSERT_EQ(0, r.read_data());
   fclose(f);
 
