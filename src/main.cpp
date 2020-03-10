@@ -6,9 +6,15 @@
 //  Copyright 3/5/2020 Clay Sampson. All rights reserved.
 //
 #include <stdlib.h>
+#include <thread>
 #include "web/mongoose.h"
 #include "utils/debug.hpp"
 #include "reader_manager.hpp"
+
+////////////////////////////////////////////////////////////////////////////////
+// rm The reader manager
+////////////////////////////////////////////////////////////////////////////////
+static ReaderManager rm;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Stop when this is false
@@ -68,6 +74,17 @@ static void setup_signals(void) {
 } // end setup_signals
 
 ////////////////////////////////////////////////////////////////////////////////
+// run_readers
+////////////////////////////////////////////////////////////////////////////////
+static void run_readers(void) {
+  dpr("Starting\n");
+  while(run) {
+    rm.poll_readers(1000);
+  }
+  dpr("Exiting\n");
+} // end run_readers
+
+////////////////////////////////////////////////////////////////////////////////
 // ev_handler
 ////////////////////////////////////////////////////////////////////////////////
 static void ev_handler(struct mg_connection *c, int ev, void *p) {
@@ -96,7 +113,9 @@ static void ev_handler(struct mg_connection *c, int ev, void *p) {
 ////////////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[]) {
   dpr("Startup\n");
+
   setup_signals();
+  std::thread readers_thread(run_readers);
 
   struct mg_mgr mgr;
   struct mg_connection *c;
@@ -109,6 +128,8 @@ int main(int argc, char* argv[]) {
     mg_mgr_poll(&mgr, 1000);
   }
   mg_mgr_free(&mgr);
+
+  readers_thread.join();
 
   dpr("Cleanup\n");
   return EXIT_SUCCESS;

@@ -33,7 +33,7 @@ public:
 
   ///
   /// @brief Read data; called when there is definitely data available
-  /// @return like errno; if an error is reported this reader will be deleted
+  /// @return like errno
   ///
   virtual int read_data(void) = 0;
 }; // end class IReader

@@ -9,19 +9,41 @@
 #define _READER_MANAGER_HPP
 
 #include "readers/reader_interface.hpp"
+#include "utils/rwlock_interface.hpp"
+#include <stdint.h>
 #include <memory>
 #include <string>
 #include <map>
+
+/// @brief Reader state bit mask
+enum READER_MANAGER_READER_STATE {
+  RS_FD_BAD    = 0x01, //!< Reader file descriptor is bad (<0)
+  RS_READ_FAIL = 0x02, //!< Reader failed reading when it should have succeeded
+  RS_HAD_DATA  = 0x40  //!< Reader had data available and processed it
+};
+
+/// @brief Storage for reader state
+struct READER_STATE {
+  READER_STATE() : current_state(0), accumulated_state(0) {}
+  ~READER_STATE(){}
+  uint8_t current_state; //!< The current state;
+  uint8_t accumulated_state; //!< The accumulated state; bits set are never cleared
+};
 
 ///
 /// @class ReaderManager
 /// @brief Manages readers
 ///
 class ReaderManager {
-  typedef std::map<std::string, std::shared_ptr<IReader> > reader_map_t; //!< Type for the reader map
 public:
+  /// @brief Construct
   ReaderManager();
+
+  /// @brief Destroy
   virtual ~ReaderManager();
+
+  typedef std::map<std::string, std::shared_ptr<IReader> > reader_map_t; //!< Type for the reader map
+  typedef std::map<std::string, READER_STATE> reader_state_map_t; //!< Type for reader to state map
 
   ///
   /// @brief Add a reader
@@ -41,13 +63,18 @@ public:
 
   ///
   /// @brief Poll all readers and read from them if they have data pending
-  /// @note This does not block of there are no readers in the database
   /// @param[in] timeout_ms The maximum time to wait for data in ms
+  /// @param[out] before_poll_states If not null, will contain a copy of all
+  ///   reader states before any polling or data processing occurs.
   ///
-  void poll_readers(int timeout_ms);
+  void poll_readers(int timeout_ms, reader_state_map_t* before_poll_states = nullptr);
 
 private:
-  reader_map_t reader_map; //!< The readers by name
+
+  void clear_current_states(void);
+
+  PosixRWLockInterface<reader_map_t> reader_map_locked; //!< The readers by name; LOCK FIRST
+  PosixRWLockInterface<reader_state_map_t> state_map_locked; //!< The state map; LOCK SECOND
 }; // end class ReaderManager
 
 #endif // _READER_MANAGER_HPP
