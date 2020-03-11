@@ -29,6 +29,11 @@ public:
     pthread_rwlockattr_destroy(&attr);
   }
 
+  ///
+  /// @brief Acquire a read lock
+  /// @param[in] fun The function to call when the lock is acquired
+  /// @return The result of calling fun on the underlying object
+  ///
   template<class RETURN_T> RETURN_T rdlock(std::function<RETURN_T(UNDERLYING_T&)> fun) {
     pthread_rwlock_rdlock(&l);
     try {
@@ -42,6 +47,11 @@ public:
     }
   }
 
+  ///
+  /// @brief Acquire a write lock
+  /// @param[in] fun The function to call when the lock is acquired
+  /// @return The result of calling fun on the underlying object
+  ///
   template<class RETURN_T> RETURN_T wrlock(std::function<RETURN_T(UNDERLYING_T&)> fun) {
     pthread_rwlock_wrlock(&l);
     try {
@@ -55,6 +65,11 @@ public:
     }
   }
 
+  ///
+  /// @brief Acquire a read lock (const)
+  /// @param[in] fun The function to call when the lock is acquired
+  /// @return The result of calling fun on the underlying object
+  ///
   template<class RETURN_T> RETURN_T rdlock(std::function<RETURN_T(const UNDERLYING_T&)> fun) const {
     pthread_rwlock_rdlock(&l);
     try {
@@ -68,6 +83,11 @@ public:
     }
   }
 
+  ///
+  /// @brief Acquire a write lock (const)
+  /// @param[in] fun The function to call when the lock is acquired
+  /// @return The result of calling fun on the underlying object
+  ///
   template<class RETURN_T> RETURN_T wrlock(std::function<RETURN_T(const UNDERLYING_T&)> fun) const {
     pthread_rwlock_wrlock(&l);
     try {
