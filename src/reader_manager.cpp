@@ -9,6 +9,7 @@
 #include "reader_manager.hpp"
 #include <sys/select.h>
 #include <algorithm>
+#include <list>
 
 ////////////////////////////////////////////////////////////////////////////////
 // ReaderManager::ReaderManager
@@ -103,6 +104,8 @@ void ReaderManager::poll_readers(int timeout_ms, reader_state_map_t* before_poll
     return;
   }
 
+  std::list<std::string> updated_state_readers;
+
   reader_map_locked.wrlock<bool>([&] (reader_map_t& reader_map) -> bool {
     for(auto reader : reader_map) {
       if(FD_ISSET(reader.second->get_fd(), &read_fds)) {
@@ -130,13 +133,71 @@ void ReaderManager::poll_readers(int timeout_ms, reader_state_map_t* before_poll
           // accumulate state
           state.accumulated_state |= state.current_state;
 
+          // remember that this one got updated state
+          updated_state_readers.push_back(reader.first);
+
           return true;
         }); // end scope state_map_locked.wrlock
       } // end if reader has data
     } // end for all readers
     return true;
   }); // end scope reader_map_locked.wrlock
+
+  // tell listeners about state changes
+  state_map_locked.rdlock<bool>([&] (reader_state_map_t& state_map) -> bool {
+    return listener_map_locked.rdlock<bool>([&] (listener_map_t& listener_map) -> bool {
+      for(std::string& name : updated_state_readers) {
+        const READER_STATE& state = state_map[name];
+        for(auto listener : listener_map) {
+          listener.second->state_change(name, state);
+        } // end for all listeners
+      } // end end for all updated state readers
+      return true;
+    });
+  });
 } // end ReaderManager::poll_readers
+
+////////////////////////////////////////////////////////////////////////////////
+// ReaderManager::add_listener
+////////////////////////////////////////////////////////////////////////////////
+bool ReaderManager::add_listener(const std::string& name, std::shared_ptr<IEventListener> listener) {
+  if(!listener) {
+    return false;
+  }
+
+  return listener_map_locked.wrlock<bool>([&] (listener_map_t& listener_map) -> bool {
+    if(listener_map.find(name) != listener_map.end()) {
+      return false;
+    }
+    listener_map[name] = listener;
+    return true;
+  });
+} // end ReaderManager::add_listener
+
+////////////////////////////////////////////////////////////////////////////////
+// ReaderManager::delete_listener
+////////////////////////////////////////////////////////////////////////////////
+bool ReaderManager::delete_listener(const std::string& name) {
+  return listener_map_locked.wrlock<bool>([&] (listener_map_t& listener_map) -> bool {
+    if(listener_map.find(name) == listener_map.end()) {
+      return false;
+    }
+    listener_map.erase(name);
+    return true;
+  });
+} // end ReaderManager::delete_listener
+
+////////////////////////////////////////////////////////////////////////////////
+// ReaderManager::process_message
+////////////////////////////////////////////////////////////////////////////////
+void ReaderManager::process_message(const std::string& line) {
+  listener_map_locked.rdlock<bool>([&] (listener_map_t& listener_map) -> void {
+    for(auto listener : listener_map) {
+      listener.second->timeline_event(name, line);
+    } // end for all listeners
+    return true;
+  });
+} // end ReaderManager::process_message
 
 ////////////////////////////////////////////////////////////////////////////////
 // ReaderManager::clear_current_states

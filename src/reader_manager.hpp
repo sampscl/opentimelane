@@ -10,31 +10,19 @@
 
 #include "readers/reader_interface.hpp"
 #include "utils/rwlock_interface.hpp"
+#include "event_listener_interface.hpp"
+#include "message_handler_interface.hpp"
 #include <stdint.h>
 #include <memory>
 #include <string>
 #include <map>
 
-/// @brief Reader state bit mask
-enum READER_MANAGER_READER_STATE {
-  RS_FD_BAD    = 0x01, //!< Reader file descriptor is bad (<0)
-  RS_READ_FAIL = 0x02, //!< Reader failed reading when it should have succeeded
-  RS_HAD_DATA  = 0x04  //!< Reader had data available and processed it
-};
-
-/// @brief Storage for reader state
-struct READER_STATE {
-  READER_STATE() : current_state(0), accumulated_state(0) {}
-  ~READER_STATE(){}
-  uint8_t current_state; //!< The current state;
-  uint8_t accumulated_state; //!< The accumulated state; bits set are never cleared
-};
 
 ///
 /// @class ReaderManager
 /// @brief Manages readers
 ///
-class ReaderManager {
+class ReaderManager : public IMessageHandlerInterface {
 public:
   /// @brief Construct
   ReaderManager();
@@ -44,7 +32,12 @@ public:
 
   typedef std::map<std::string, std::shared_ptr<IReader> > reader_map_t; //!< Type for the reader map
   typedef std::map<std::string, READER_STATE> reader_state_map_t; //!< Type for reader to state map
+  typedef std::map<std::string, std::shared_ptr<IEventListener> > listener_map_t; //!< Type for listener map
 
+  /** @name Reader API
+   *  API Dealing with readers
+   */
+  /// @{
   ///
   /// @brief Add a reader
   /// @param[in] name The name to associate with reader; must be unique
@@ -68,6 +61,30 @@ public:
   ///   reader states before any polling or data processing occurs.
   ///
   void poll_readers(int timeout_ms, reader_state_map_t* before_poll_states = nullptr);
+  /// @}
+
+  /** @name Listener API
+   *  API Dealing with listeners
+   */
+  /// @{
+  ///
+  /// @brief Register a listener
+  /// @param[in] name The name to associate with listener; must be unique
+  /// @param[in] listener The listener
+  /// @return @li true on success @li false if listener is null or name already exists
+  ///
+  bool add_listener(const std::string& name, std::shared_ptr<IEventListener> listener);
+
+  ///
+  /// @brief Delete a listener
+  /// @param[in] name The name of the listener to delete
+  /// @return @li true on success @li false if named listener did not exist
+  ///
+  bool delete_listener(const std::string& name);
+  /// @}
+
+  // Methods inherited from IMessageHandlerInterface
+  virtual void process_message(const std::string& line) override;
 
 private:
 
@@ -75,6 +92,7 @@ private:
 
   PosixRWLockInterface<reader_map_t> reader_map_locked; //!< The readers by name; LOCK FIRST
   PosixRWLockInterface<reader_state_map_t> state_map_locked; //!< The state map; LOCK SECOND
+  PosixRWLockInterface<listener_map_t> listener_map_locked; //!< The listener map; LOCK THIRD
 }; // end class ReaderManager
 
 #endif // _READER_MANAGER_HPP
