@@ -19,7 +19,7 @@
 enum READER_MANAGER_READER_STATE {
   RS_FD_BAD    = 0x01, //!< Reader file descriptor is bad (<0)
   RS_READ_FAIL = 0x02, //!< Reader failed reading when it should have succeeded
-  RS_HAD_DATA  = 0x40  //!< Reader had data available and processed it
+  RS_HAD_DATA  = 0x04  //!< Reader had data available and processed it
 };
 
 /// @brief Storage for reader state

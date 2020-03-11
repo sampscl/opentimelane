@@ -16,7 +16,7 @@
 /// @tparam UNDERLYING_T The underlying type to mediate access to
 /// @brief Mediate access to an underlying object with a POSIX R/W Lock
 ///
-template<typename UNDERLYING_T>
+template<class UNDERLYING_T>
 class PosixRWLockInterface {
 public:
   PosixRWLockInterface() {
@@ -29,137 +29,62 @@ public:
     pthread_rwlockattr_destroy(&attr);
   }
 
-  template<typename RETURN_T> RETURN_T rdlock(std::function<RETURN_T(UNDERLYING_T&)> fun);
-  template<typename RETURN_T> RETURN_T wrlock(std::function<RETURN_T(UNDERLYING_T&)> fun);
-  template<typename RETURN_T> RETURN_T rdlock(std::function<RETURN_T(const UNDERLYING_T&)> fun) const;
-  template<typename RETURN_T> RETURN_T wrlock(std::function<RETURN_T(const UNDERLYING_T&)> fun) const;
+  template<class RETURN_T> RETURN_T rdlock(std::function<RETURN_T(UNDERLYING_T&)> fun) {
+    pthread_rwlock_rdlock(&l);
+    try {
+      RETURN_T result = fun(t);
+      pthread_rwlock_unlock(&l);
+      return result;
+    }
+    catch(...) {
+      pthread_rwlock_unlock(&l);
+      throw;
+    }
+  }
 
-  void rdlock(std::function<void(UNDERLYING_T&)> fun);
-  void wrlock(std::function<void(UNDERLYING_T&)> fun);
-  void rdlock(std::function<void(const UNDERLYING_T&)> fun) const;
-  void wrlock(std::function<void(const UNDERLYING_T&)> fun) const;
+  template<class RETURN_T> RETURN_T wrlock(std::function<RETURN_T(UNDERLYING_T&)> fun) {
+    pthread_rwlock_wrlock(&l);
+    try {
+      RETURN_T result = fun(t);
+      pthread_rwlock_unlock(&l);
+      return result;
+    }
+    catch(...) {
+      pthread_rwlock_unlock(&l);
+      throw;
+    }
+  }
+
+  template<class RETURN_T> RETURN_T rdlock(std::function<RETURN_T(const UNDERLYING_T&)> fun) const {
+    pthread_rwlock_rdlock(&l);
+    try {
+      RETURN_T result = fun(t);
+      pthread_rwlock_unlock(&l);
+      return result;
+    }
+    catch(...) {
+      pthread_rwlock_unlock(&l);
+      throw;
+    }
+  }
+
+  template<class RETURN_T> RETURN_T wrlock(std::function<RETURN_T(const UNDERLYING_T&)> fun) const {
+    pthread_rwlock_wrlock(&l);
+    try {
+      RETURN_T result = fun(t);
+      pthread_rwlock_unlock(&l);
+      return result;
+    }
+    catch(...) {
+      pthread_rwlock_unlock(&l);
+      throw;
+    }
+  }
 
 private:
   UNDERLYING_T t;
   pthread_rwlock_t l;
   pthread_rwlockattr_t attr;
 }; // end class PosixRWLockInterface
-
-template<typename UNDERLYING_T>
-template<typename RETURN_T>
-RETURN_T PosixRWLockInterface<UNDERLYING_T>::rdlock(std::function<RETURN_T(UNDERLYING_T&)> fun) {
-  pthread_rwlock_rdlock(&l);
-  try {
-    RETURN_T result = fun(t);
-    pthread_rwlock_unlock(&l);
-    return result;
-  }
-  catch(...) {
-    pthread_rwlock_unlock(&l);
-    throw;
-  }
-}
-
-template<typename UNDERLYING_T>
-template<typename RETURN_T>
-RETURN_T PosixRWLockInterface<UNDERLYING_T>::wrlock(std::function<RETURN_T(UNDERLYING_T&)> fun) {
-  pthread_rwlock_wrlock(&l);
-  try {
-    RETURN_T result = fun(t);
-    pthread_rwlock_unlock(&l);
-    return result;
-  }
-  catch(...) {
-    pthread_rwlock_unlock(&l);
-    throw;
-  }
-}
-
-template<typename UNDERLYING_T>
-template<typename RETURN_T>
-RETURN_T PosixRWLockInterface<UNDERLYING_T>::rdlock(std::function<RETURN_T(const UNDERLYING_T&)> fun) const {
-  pthread_rwlock_rdlock(&l);
-  try {
-    RETURN_T result = fun(t);
-    pthread_rwlock_unlock(&l);
-    return result;
-  }
-  catch(...) {
-    pthread_rwlock_unlock(&l);
-    throw;
-  }
-}
-
-template<typename UNDERLYING_T>
-template<typename RETURN_T>
-RETURN_T PosixRWLockInterface<UNDERLYING_T>::wrlock(std::function<RETURN_T(const UNDERLYING_T&)> fun) const {
-  pthread_rwlock_wrlock(&l);
-  try {
-    RETURN_T result = fun(t);
-    pthread_rwlock_unlock(&l);
-    return result;
-  }
-  catch(...) {
-    pthread_rwlock_unlock(&l);
-    throw;
-  }
-}
-
-
-template<typename UNDERLYING_T>
-void PosixRWLockInterface<UNDERLYING_T>::rdlock(std::function<void(UNDERLYING_T&)> fun) {
-  pthread_rwlock_rdlock(&l);
-  try {
-    fun(t);
-    pthread_rwlock_unlock(&l);
-    return;
-  }
-  catch(...) {
-    pthread_rwlock_unlock(&l);
-    throw;
-  }
-}
-
-template<typename UNDERLYING_T>
-void PosixRWLockInterface<UNDERLYING_T>::wrlock(std::function<void(UNDERLYING_T&)> fun) {
-  pthread_rwlock_wrlock(&l);
-  try {
-    fun(t);
-    pthread_rwlock_unlock(&l);
-    return;
-  }
-  catch(...) {
-    pthread_rwlock_unlock(&l);
-    throw;
-  }
-}
-
-template<typename UNDERLYING_T>
-void PosixRWLockInterface<UNDERLYING_T>::rdlock(std::function<void(const UNDERLYING_T&)> fun) const {
-  pthread_rwlock_rdlock(&l);
-  try {
-    fun(t);
-    pthread_rwlock_unlock(&l);
-    return;
-  }
-  catch(...) {
-    pthread_rwlock_unlock(&l);
-    throw;
-  }
-}
-
-template<typename UNDERLYING_T>
-void PosixRWLockInterface<UNDERLYING_T>::wrlock(std::function<void(const UNDERLYING_T&)> fun) const {
-  pthread_rwlock_wrlock(&l);
-  try {
-    fun(t);
-    pthread_rwlock_unlock(&l);
-    return;
-  }
-  catch(...) {
-    pthread_rwlock_unlock(&l);
-    throw;
-  }
-}
 
 #endif // _RWLOCK_INTERFACE_HPP

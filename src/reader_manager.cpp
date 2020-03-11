@@ -30,15 +30,16 @@ bool ReaderManager::add_reader(const std::string& name, std::shared_ptr<IReader>
     return false;
   }
 
-  return reader_map_locked.wrlock([&] (reader_map_t& reader_map) -> bool {
+  return reader_map_locked.wrlock<bool>([&] (reader_map_t& reader_map) -> bool {
 
     if(reader_map.find(name) != reader_map.end()) {
       return false;
     }
 
     reader_map[name] = reader;
-    state_map_locked.wrlock([&] (reader_state_map_t& state_map) -> void {
+    state_map_locked.wrlock<bool>([&] (reader_state_map_t& state_map) -> bool {
       state_map[name] = READER_STATE();
+      return true;
     }); // end scope state_map_locked.wrlock
 
     return true;
@@ -55,8 +56,9 @@ bool ReaderManager::delete_reader(const std::string& name) {
     }
     reader_map.erase(name);
 
-    state_map_locked.wrlock([&] (reader_state_map_t& state_map) -> void {
+    state_map_locked.wrlock([&] (reader_state_map_t& state_map) -> bool {
       state_map.erase(name);
+      return true;
     });
 
     return true;
@@ -69,8 +71,9 @@ bool ReaderManager::delete_reader(const std::string& name) {
 void ReaderManager::poll_readers(int timeout_ms, reader_state_map_t* before_poll_states) {
 
   if(before_poll_states) {
-    state_map_locked.rdlock([&] (reader_state_map_t& state_map) -> void {
+    state_map_locked.rdlock([&] (reader_state_map_t& state_map) -> bool {
     *before_poll_states = state_map;
+    return true;
     });
   }
 
@@ -83,7 +86,7 @@ void ReaderManager::poll_readers(int timeout_ms, reader_state_map_t* before_poll
   fd_set read_fds;
   FD_ZERO(&read_fds);
   int nfds = 0;
-  reader_map_locked.rdlock([&] (reader_map_t& reader_map) -> void {
+  reader_map_locked.rdlock([&] (reader_map_t& reader_map) -> bool {
     for(auto reader : reader_map) {
       const int fd = reader.second->get_fd();
       if(fd >= 0) {
@@ -91,6 +94,7 @@ void ReaderManager::poll_readers(int timeout_ms, reader_state_map_t* before_poll
         nfds = std::max(nfds, fd);
       }
     } // end for all readers
+    return true;
   });
   ++nfds;
 
@@ -99,11 +103,11 @@ void ReaderManager::poll_readers(int timeout_ms, reader_state_map_t* before_poll
     return;
   }
 
-  reader_map_locked.wrlock([&] (reader_map_t& reader_map) -> void {
+  reader_map_locked.wrlock([&] (reader_map_t& reader_map) -> bool {
     for(auto reader : reader_map) {
       if(FD_ISSET(reader.second->get_fd(), &read_fds)) {
         const int read_result = reader.second->read_data();
-        state_map_locked.wrlock([&] (reader_state_map_t& state_map) -> void {
+        state_map_locked.wrlock([&] (reader_state_map_t& state_map) -> bool {
           READER_STATE& state = state_map[reader.first];
 
           // clear current state then OR in new state bits
@@ -125,9 +129,12 @@ void ReaderManager::poll_readers(int timeout_ms, reader_state_map_t* before_poll
 
           // accumulate state
           state.accumulated_state |= state.current_state;
+
+          return true;
         }); // end scope state_map_locked.wrlock
       } // end if reader has data
     } // end for all readers
+    return true;
   }); // end scope reader_map_locked.wrlock
 } // end ReaderManager::poll_readers
 
@@ -135,9 +142,10 @@ void ReaderManager::poll_readers(int timeout_ms, reader_state_map_t* before_poll
 // ReaderManager::clear_current_states
 ////////////////////////////////////////////////////////////////////////////////
 void ReaderManager::clear_current_states(void) {
-  state_map_locked.wrlock([&] (reader_state_map_t& state_map) -> void {
+  state_map_locked.wrlock([&] (reader_state_map_t& state_map) -> bool {
     for(auto reader_state : state_map) {
       reader_state.second.current_state = 0;
     }
+    return true;
   });
 } // end ReaderManager::clear_current_states
