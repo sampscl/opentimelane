@@ -21,9 +21,10 @@ public:
 
   ///
   /// @brief Handle a message
+  /// @param[in] name The name of the sender
   /// @param[in] line A line of text, not including \n
   ///
-  virtual void process_message(const std::string& line) = 0;
+  virtual void process_message(const std::string& name, const std::string& line) = 0;
 
 }; // end class IMessageHandlerInterface
 

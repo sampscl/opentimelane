@@ -23,7 +23,7 @@ protected:
 
 class MessageHandlerInterface : public IMessageHandlerInterface {
 public:
-  MOCK_METHOD(void, process_message, (const std::string&));
+  MOCK_METHOD(void, process_message, (const std::string&, const std::string&));
 };
 
 TEST_F(FifoReaderTest, will_create_and_destroy_fifo) {
@@ -52,7 +52,7 @@ TEST_F(FifoReaderTest, does_not_process_non_lines) {
   fprintf(f, "not a line");
   fflush(f);
 
-  EXPECT_CALL(h, process_message(_))
+  EXPECT_CALL(h, process_message(_, _))
     .Times(0)
   ;
 
@@ -72,7 +72,7 @@ TEST_F(FifoReaderTest, processes_single_line) {
   fprintf(f, "just one line\n");
   fflush(f);
 
-  EXPECT_CALL(h, process_message("just one line"))
+  EXPECT_CALL(h, process_message(_, "just one line"))
     .Times(1)
   ;
 
@@ -93,7 +93,7 @@ TEST_F(FifoReaderTest, processes_spliced_lines) {
   fprintf(f, "line\n");
   fflush(f);
 
-  EXPECT_CALL(h, process_message("just one line"))
+  EXPECT_CALL(h, process_message(_, "just one line"))
     .Times(1)
   ;
 
@@ -113,13 +113,13 @@ TEST_F(FifoReaderTest, processes_multiple_lines) {
   fprintf(f, "line one\nline two\nline 3\n");
   fflush(f);
 
-  EXPECT_CALL(h, process_message("line one"))
+  EXPECT_CALL(h, process_message(_, "line one"))
     .Times(1)
   ;
-  EXPECT_CALL(h, process_message("line two"))
+  EXPECT_CALL(h, process_message(_, "line two"))
     .Times(1)
   ;
-  EXPECT_CALL(h, process_message("line 3"))
+  EXPECT_CALL(h, process_message(_, "line 3"))
     .Times(1)
   ;
 
@@ -137,13 +137,13 @@ TEST_F(FifoReaderTest, processes_multiple_spliced_lines) {
   FILE *f = fopen(name, "w");
   ASSERT_NE(nullptr, f);
 
-  EXPECT_CALL(h, process_message("line one"))
+  EXPECT_CALL(h, process_message(_, "line one"))
     .Times(1)
   ;
-  EXPECT_CALL(h, process_message("line two"))
+  EXPECT_CALL(h, process_message(_, "line two"))
     .Times(1)
   ;
-  EXPECT_CALL(h, process_message("line 3"))
+  EXPECT_CALL(h, process_message(_, "line 3"))
     .Times(1)
   ;
 

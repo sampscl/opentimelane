@@ -84,7 +84,7 @@ public:
   /// @}
 
   // Methods inherited from IMessageHandlerInterface
-  virtual void process_message(const std::string& line) override;
+  virtual void process_message(const std::string& name, const std::string& line) override;
 
 private:
 

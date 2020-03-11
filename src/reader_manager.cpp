@@ -190,8 +190,8 @@ bool ReaderManager::delete_listener(const std::string& name) {
 ////////////////////////////////////////////////////////////////////////////////
 // ReaderManager::process_message
 ////////////////////////////////////////////////////////////////////////////////
-void ReaderManager::process_message(const std::string& line) {
-  listener_map_locked.rdlock<bool>([&] (listener_map_t& listener_map) -> void {
+void ReaderManager::process_message(const std::string& name, const std::string& line) {
+  listener_map_locked.rdlock<bool>([&] (listener_map_t& listener_map) -> bool {
     for(auto listener : listener_map) {
       listener.second->timeline_event(name, line);
     } // end for all listeners
