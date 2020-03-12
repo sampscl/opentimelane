@@ -16,7 +16,7 @@
 #include <memory>
 #include <string>
 #include <map>
-
+#include <list>
 
 ///
 /// @class ReaderManager
@@ -33,6 +33,7 @@ public:
   typedef std::map<std::string, std::shared_ptr<IReader> > reader_map_t; //!< Type for the reader map
   typedef std::map<std::string, READER_STATE> reader_state_map_t; //!< Type for reader to state map
   typedef std::map<std::string, std::shared_ptr<IEventListener> > listener_map_t; //!< Type for listener map
+  typedef std::list<std::pair<std::string, std::string> > recent_messages_list_t;
 
   /** @name Reader API
    *  API Dealing with readers
@@ -93,6 +94,7 @@ private:
   PosixRWLockInterface<reader_map_t> reader_map_locked; //!< The readers by name; LOCK FIRST
   PosixRWLockInterface<reader_state_map_t> state_map_locked; //!< The state map; LOCK SECOND
   PosixRWLockInterface<listener_map_t> listener_map_locked; //!< The listener map; LOCK THIRD
+  PosixRWLockInterface<recent_messages_list_t> recent_messages_locked; //!< The list of recent messages; lock FOURTH
 }; // end class ReaderManager
 
 #endif // _READER_MANAGER_HPP

@@ -9,7 +9,6 @@
 #include "reader_manager.hpp"
 #include <sys/select.h>
 #include <algorithm>
-#include <list>
 
 ////////////////////////////////////////////////////////////////////////////////
 // ReaderManager::ReaderManager
@@ -161,17 +160,33 @@ void ReaderManager::poll_readers(int timeout_ms, reader_state_map_t* before_poll
 // ReaderManager::add_listener
 ////////////////////////////////////////////////////////////////////////////////
 bool ReaderManager::add_listener(const std::string& name, std::shared_ptr<IEventListener> listener) {
+
   if(!listener) {
     return false;
   }
 
-  return listener_map_locked.wrlock<bool>([&] (listener_map_t& listener_map) -> bool {
+  // add listener to map
+  bool added = listener_map_locked.wrlock<bool>([&] (listener_map_t& listener_map) -> bool {
     if(listener_map.find(name) != listener_map.end()) {
       return false;
     }
     listener_map[name] = listener;
     return true;
   });
+
+  if(!added) {
+    return false;
+  }
+
+  // update listener with recent history
+  recent_messages_locked.rdlock<bool>([&] (recent_messages_list_t& recent_messages) -> bool {
+    for(auto item : recent_messages) {
+      listener->timeline_event(item.first, item.second);
+    }
+    return true;
+  });
+
+  return true;
 } // end ReaderManager::add_listener
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -191,12 +206,22 @@ bool ReaderManager::delete_listener(const std::string& name) {
 // ReaderManager::process_message
 ////////////////////////////////////////////////////////////////////////////////
 void ReaderManager::process_message(const std::string& name, const std::string& line) {
+
+  recent_messages_locked.wrlock<bool>([&] (recent_messages_list_t& recent_messages) -> bool {
+    recent_messages.push_front(std::make_pair(name, line));
+    while(recent_messages.size() > 1000) {
+      recent_messages.pop_back();
+    }
+    return true;
+  });
+
   listener_map_locked.rdlock<bool>([&] (listener_map_t& listener_map) -> bool {
     for(auto listener : listener_map) {
       listener.second->timeline_event(name, line);
     } // end for all listeners
     return true;
   });
+  
 } // end ReaderManager::process_message
 
 ////////////////////////////////////////////////////////////////////////////////
