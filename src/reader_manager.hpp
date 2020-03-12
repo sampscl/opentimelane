@@ -8,10 +8,10 @@
 #ifndef _READER_MANAGER_HPP
 #define _READER_MANAGER_HPP
 
-#include "readers/reader_interface.hpp"
+#include "interfaces/reader_interface.hpp"
 #include "utils/rwlock_interface.hpp"
-#include "event_listener_interface.hpp"
-#include "message_handler_interface.hpp"
+#include "interfaces/event_listener_interface.hpp"
+#include "interfaces/message_handler_interface.hpp"
 #include <stdint.h>
 #include <memory>
 #include <string>
@@ -84,7 +84,7 @@ public:
   /// @}
 
   // Methods inherited from IMessageHandlerInterface
-  virtual void process_message(const std::string& line) override;
+  virtual void process_message(const std::string& name, const std::string& line) override;
 
 private:
 

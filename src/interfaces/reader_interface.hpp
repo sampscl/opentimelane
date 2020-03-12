@@ -8,7 +8,7 @@
 #ifndef _READER_INTERFACE
 #define _READER_INTERFACE
 
-#include "../message_handler_interface.hpp"
+#include "../interfaces/message_handler_interface.hpp"
 
 ///
 /// @class IReader

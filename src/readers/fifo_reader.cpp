@@ -150,6 +150,6 @@ void FifoReader::process_buffer(void) {
     dpr("New buffer size: %zu\n", line_buffer.size());
 
     // process a line
-    handler->process_message(line);
+    handler->process_message(fifo_path, line);
   } // end while
 } // end FifoReader::process_buffer

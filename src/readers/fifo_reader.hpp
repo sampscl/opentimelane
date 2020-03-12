@@ -8,7 +8,7 @@
 #ifndef _FIFO_READER_HPP
 #define _FIFO_READER_HPP
 
-#include "reader_interface.hpp"
+#include "../interfaces/reader_interface.hpp"
 #include <string>
 #include "../utils/buffer.hpp"
 
