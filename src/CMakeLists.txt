@@ -29,6 +29,7 @@ file(GLOB SRCS *.cpp
   utils/*.cpp
   readers/*.cpp
   web/*.c
+  web/*.cpp
 )
 
 # debug or not

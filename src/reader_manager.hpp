@@ -56,6 +56,11 @@ public:
   bool delete_reader(const std::string& name);
 
   ///
+  /// @brief Delete all readers
+  ///
+  void delete_all_readers(void);
+
+  ///
   /// @brief Poll all readers and read from them if they have data pending
   /// @param[in] timeout_ms The maximum time to wait for data in ms
   /// @param[out] before_poll_states If not null, will contain a copy of all

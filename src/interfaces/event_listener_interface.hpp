@@ -44,9 +44,9 @@ public:
   ///
   /// @brief Inform the listener of a timeline event
   /// @param[in] name The name of the reader
-  /// @param[in] json_text The json text for the event. Format: 
+  /// @param[in] json_text The json text for the event. Format:
   ///
-  virtual void timeline_event(const std::string& name, const std::string& json_text);
+  virtual void timeline_event(const std::string& name, const std::string& json_text) = 0;
 
 
 }; // end class IEventListener

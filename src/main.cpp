@@ -10,6 +10,7 @@
 #include "web/mongoose.h"
 #include "utils/debug.hpp"
 #include "reader_manager.hpp"
+#include "web/event_listener.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 // rm The reader manager
@@ -89,7 +90,6 @@ static void run_readers(void) {
 ////////////////////////////////////////////////////////////////////////////////
 static void ev_handler(struct mg_connection *c, int ev, void *p) {
   if(ev != MG_EV_HTTP_REQUEST) {
-    dpr("c: %p, ev: %d, user_data: %p\n", c, ev, c->user_data);
     return;
   }
 
@@ -121,6 +121,12 @@ int main(int argc, char* argv[]) {
   struct mg_connection *c;
 
   mg_mgr_init(&mgr, NULL);
+
+  std::shared_ptr<EventListener> el(new EventListener);
+  el->init(&mgr);
+  rm.add_listener("global", el);
+  el.reset();
+
   c = mg_bind(&mgr, "8080", ev_handler);
   mg_set_protocol_http_websocket(c);
 
@@ -128,6 +134,8 @@ int main(int argc, char* argv[]) {
     mg_mgr_poll(&mgr, 1000);
   }
   mg_mgr_free(&mgr);
+
+  rm.delete_all_readers();
 
   readers_thread.join();
 

@@ -66,6 +66,19 @@ bool ReaderManager::delete_reader(const std::string& name) {
 } // end ReaderManager::delete_reader
 
 ////////////////////////////////////////////////////////////////////////////////
+// ReaderManager::delete_all_readers
+////////////////////////////////////////////////////////////////////////////////
+void ReaderManager::delete_all_readers(void) {
+  reader_map_locked.wrlock<bool>([&] (reader_map_t& reader_map) -> bool {
+    reader_map.clear();
+    return state_map_locked.wrlock<bool>([&] (reader_state_map_t& state_map) -> bool {
+      state_map.clear();
+      return true;
+    });
+  });
+} // end ReaderManager::delete_all_readers
+
+////////////////////////////////////////////////////////////////////////////////
 // ReaderManager::poll_readers
 ////////////////////////////////////////////////////////////////////////////////
 void ReaderManager::poll_readers(int timeout_ms, reader_state_map_t* before_poll_states) {
@@ -221,7 +234,7 @@ void ReaderManager::process_message(const std::string& name, const std::string& 
     } // end for all listeners
     return true;
   });
-  
+
 } // end ReaderManager::process_message
 
 ////////////////////////////////////////////////////////////////////////////////
